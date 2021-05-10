@@ -6,17 +6,23 @@ const PORT = 3000;
 
 const server = http.createServer((request, response) => {
   console.log(`Request method: ${request.method} on Endpoint: ${request.url}`);
-  const parsedUrl = url.parse(request.url, true);
-  console.log(parsedUrl);
+  const parsedUrl = url.parse(request.url);
+  let { pathname } = parsedUrl;
+  let id = null;
+
+  const splitEndpoint = pathname.split("/").filter(Boolean);
+  if (splitEndpoint.length > 1) {
+    pathname = `/${splitEndpoint[0]}/:id`;
+    id = splitEndpoint[1];
+  }
 
   const route = routes.find(
     (routeObj) =>
-      routeObj.method === request.method &&
-      routeObj.endpoint === parsedUrl.pathname
+      routeObj.endpoint === pathname && routeObj.method === request.method
   );
-
   if (route) {
     request.query = parsedUrl.query;
+    request.params = { id };
     route.handler(request, response);
   } else {
     response.writeHead(404, { "Content-type": "text/html" });
