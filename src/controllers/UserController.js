@@ -39,7 +39,7 @@ module.exports = {
     response.send(200, newUser);
   },
 
-  updateUser (request, response) {
+  updateUser(request, response) {
     let { id } = request.params
     const { name } = request.body
 
@@ -65,7 +65,7 @@ module.exports = {
     response.send(200, { id, name })
   },
 
-  deleteUser (request, response) {
+  deleteUser(request, response) {
     let { id } = request.params
     id = Number(id)
 
