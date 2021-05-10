@@ -1,12 +1,16 @@
 const http = require("http");
 const url = require("url");
+
 const routes = require("./routes");
 
 const PORT = 3000;
 
 const server = http.createServer((request, response) => {
-  console.log(`Request method: ${request.method} on Endpoint: ${request.url}`);
-  const parsedUrl = url.parse(request.url);
+  const parsedUrl = url.parse(request.url, true);
+  console.log(
+    `Request method: ${request.method} on Endpoint: ${parsedUrl.pathname}`
+  );
+
   let { pathname } = parsedUrl;
   let id = null;
 
@@ -20,6 +24,7 @@ const server = http.createServer((request, response) => {
     (routeObj) =>
       routeObj.endpoint === pathname && routeObj.method === request.method
   );
+
   if (route) {
     request.query = parsedUrl.query;
     request.params = { id };
@@ -32,7 +37,7 @@ const server = http.createServer((request, response) => {
     route.handler(request, response);
   } else {
     response.writeHead(404, { "Content-type": "text/html" });
-    response.end(`Cannot ${request.method} ${request.url}`);
+    response.end(`Cannot ${request.method} ${parsedUrl.pathname}`);
   }
 });
 
